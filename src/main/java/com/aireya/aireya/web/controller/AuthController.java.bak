@@ -1,0 +1,52 @@
+package com.aireya.aireya.web.controller;
+
+import com.aireya.aireya.domain.model.User;
+import com.aireya.aireya.security.JwtUtil;
+import com.aireya.aireya.service.UserService;
+import com.aireya.aireya.web.dto.LoginRequestDto;
+import com.aireya.aireya.web.dto.LoginResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final UserService userService;
+
+    @PostMapping("/login")
+    @Operation(summary = "Iniciar sesión y recibir token JWT")
+    public LoginResponseDto login(@Valid @RequestBody LoginRequestDto dto) {
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+            );
+            User user = userService.findByUsername(dto.getUsername());
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+            return new LoginResponseDto(token, 3600000);
+        } catch (AuthenticationException ex) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
+        }
+    }
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Registrar un usuario (demo)")
+    public void register(@Valid @RequestBody LoginRequestDto dto) {
+        User u = new User();
+        u.setUsername(dto.getUsername());
+        u.setPassword(dto.getPassword());
+        u.setRole("ADMIN");
+        userService.createUser(u);
+    }
+}
