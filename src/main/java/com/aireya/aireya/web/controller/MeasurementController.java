@@ -17,27 +17,40 @@ import java.time.Instant;
  * Endpoints de mediciones.
  */
 @RestController
-@RequestMapping("/api/v1/measurements")
+@RequestMapping("/api/measurements")
 @RequiredArgsConstructor
 public class MeasurementController {
 
-    private final MeasurementService service;
+    private final MeasurementService measurementService;
+
+    @GetMapping
+    @Operation(summary = "Obtener todas las mediciones (paginadas)")
+    public Page<MeasurementDto> getMeasurements(Pageable pageable) {
+        return measurementService.getAllMeasurements(pageable);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Crea una medición")
-    public MeasurementDto create(@Valid @RequestBody MeasurementCreateDto dto) {
-        return service.create(dto);
+    @Operation(summary = "Crear una nueva medición")
+    public MeasurementDto createMeasurement(@Valid @RequestBody MeasurementCreateDto dto) {
+        return measurementService.createMeasurement(dto);
     }
 
-    @GetMapping
-    @Operation(summary = "Busca mediciones con filtros y paginación")
-    public Page<MeasurementDto> search(@RequestParam(required = false) Long municipalityId,
-                                       @RequestParam(required = false) Long stationId,
-                                       @RequestParam(required = false) Pollutant pollutant,
-                                       @RequestParam(required = false) Instant from,
-                                       @RequestParam(required = false) Instant to,
-                                       Pageable pageable) {
-        return service.search(municipalityId, stationId, pollutant, from, to, pageable);
+    /**
+     * Actualizar una medición existente.
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar una medición por ID")
+    public MeasurementDto updateMeasurement(@PathVariable Long id, @Valid @RequestBody MeasurementCreateDto dto) {
+        return measurementService.updateMeasurement(id, dto);
+    }
+
+    /**
+     * Eliminar una medición por ID.
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar una medición por ID")
+    public void deleteMeasurement(@PathVariable Long id) {
+        measurementService.deleteMeasurement(id);
     }
 }

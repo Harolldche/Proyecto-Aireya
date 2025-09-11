@@ -28,14 +28,81 @@ public class MeasurementServiceImpl implements MeasurementService {
     private final StationRepository stationRepo;
     private final DataSourceRepository dsRepo;
 
+    /**
+     * Crear una nueva medición.
+     */
     @Override
     public MeasurementDto create(MeasurementCreateDto dto) {
+        return saveMeasurement(dto, null);
+    }
+
+    /**
+     * Búsqueda avanzada con filtros (municipio, estación, contaminante, rango de fechas).
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MeasurementDto> search(Long municipalityId, Long stationId, Pollutant pollutant,
+                                       Instant from, Instant to, Pageable pageable) {
+        return repo.search(municipalityId, stationId, pollutant, from, to, pageable)
+                .map(MeasurementMapper::toDto);
+    }
+
+    /**
+     * Obtener todas las mediciones con paginación.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MeasurementDto> getAllMeasurements(Pageable pageable) {
+        return repo.findAll(pageable).map(MeasurementMapper::toDto);
+    }
+
+    /**
+     * Crear una nueva medición (alias de create, usado en el controller).
+     */
+    @Override
+    public MeasurementDto createMeasurement(MeasurementCreateDto dto) {
+        return create(dto);
+    }
+
+    /**
+     * Actualizar todos los campos de una medición existente.
+     */
+    @Override
+    public MeasurementDto updateMeasurement(Long id, MeasurementCreateDto dto) {
+        return saveMeasurement(dto, id);
+    }
+
+    /**
+     * Eliminar una medición por ID.
+     */
+    @Override
+    public void deleteMeasurement(Long id) {
+        if (!repo.existsById(id)) {
+            throw new NotFoundException("Medición con ID " + id + " no encontrada");
+        }
+        repo.deleteById(id);
+    }
+
+    /**
+     * Método privado reutilizable para crear o actualizar.
+     */
+    private MeasurementDto saveMeasurement(MeasurementCreateDto dto, Long idToUpdate) {
         Station st = stationRepo.findById(dto.stationId())
                 .orElseThrow(() -> new NotFoundException("Estación no encontrada"));
         DataSource ds = dsRepo.findById(dto.dataSourceId())
                 .orElseThrow(() -> new NotFoundException("Fuente de datos no encontrada"));
 
-        Measurement m = new Measurement();
+        Measurement m;
+        if (idToUpdate != null) {
+            // Si estamos actualizando
+            m = repo.findById(idToUpdate)
+                    .orElseThrow(() -> new NotFoundException("Medición con ID " + idToUpdate + " no encontrada"));
+        } else {
+            // Si estamos creando
+            m = new Measurement();
+        }
+
+        // Asignar campos
         m.setPollutant(dto.pollutant());
         m.setValue(dto.value());
         m.setUnit(dto.unit());
@@ -44,13 +111,5 @@ public class MeasurementServiceImpl implements MeasurementService {
         m.setDataSource(ds);
 
         return MeasurementMapper.toDto(repo.save(m));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<MeasurementDto> search(Long municipalityId, Long stationId, Pollutant pollutant,
-                                       Instant from, Instant to, Pageable pageable) {
-        return repo.search(municipalityId, stationId, pollutant, from, to, pageable)
-                .map(MeasurementMapper::toDto);
     }
 }

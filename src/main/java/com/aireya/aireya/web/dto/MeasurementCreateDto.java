@@ -6,14 +6,20 @@ import jakarta.validation.constraints.*;
 import java.time.Instant;
 
 /**
- * Entrada para crear mediciones. Lleva validador de unidad/contaminante.
+ * Entrada para crear/actualizar mediciones. 
+ * Lleva validador de unidad/contaminante.
  */
 @ValidMeasurementUnit
 public record MeasurementCreateDto(
         @NotNull Pollutant pollutant,
+
         @NotNull @Positive Double value,
+
         @NotBlank String unit,
+
         @NotNull Instant timestampUtc,
+
         @NotNull Long stationId,
+
         @NotNull Long dataSourceId
 ) { }
