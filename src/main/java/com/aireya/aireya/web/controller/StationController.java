@@ -11,7 +11,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * CRUD de estaciones. En fase 3 se restringirá con JWT (via @PreAuthorize).
+ * CRUD de estaciones. En fase 3 se restringirá con JWT.
  */
 @RestController
 @RequestMapping("/api/v1/stations")
