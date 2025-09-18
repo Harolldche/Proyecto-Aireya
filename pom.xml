@@ -20,7 +20,7 @@
   </properties>
 
 
-  <!-- Parent corregido: poner versión fija -->
+  <!-- Parent -->
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
