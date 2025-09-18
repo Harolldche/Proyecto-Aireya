@@ -7,13 +7,13 @@ import lombok.Setter;
 import java.time.Instant;
 
 /**
- * Medición puntual de un contaminante en una estación, en UTC.
+ * Medición puntual de un contaminante en una estación, en UTC. Es decir, mediciones de aire
  */
 @Entity
 @Table(name = "measurements",
        indexes = {
-         @Index(name = "idx_measurement_station_ts", columnList = "station_id, timestamp_utc"),
-         @Index(name = "idx_measurement_pollutant_ts", columnList = "pollutant, timestamp_utc")
+         @Index(name = "idx_measurement_station_ts", columnList = "station_id, timestamp_utc"), //acelera las búsquedas por estación + tiempo.
+         @Index(name = "idx_measurement_pollutant_ts", columnList = "pollutant, timestamp_utc") //acelera las búsquedas por contaminante + tiempo.
        })
 @Getter @Setter
 public class Measurement {
