@@ -20,7 +20,7 @@ import java.time.Instant;
  * Endpoints de mediciones.
  */
 @RestController
-@RequestMapping("/api/measurements")
+@RequestMapping("/api/v1/measurements")
 @RequiredArgsConstructor
 public class MeasurementController {
 
