@@ -83,14 +83,14 @@
       <version>2.5.0</version>
     </dependency>
 
-    <!-- Lombok (para evitar boilerplate) -->
+    <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
 
-    <!-- Testing -->
+    <!-- Testing/Mockitos -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
