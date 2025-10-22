@@ -1,6 +1,5 @@
 package com.aireya.aireya.web.controller;
 
-
 import com.aireya.aireya.domain.common.Pollutant;
 import com.aireya.aireya.service.MeasurementService;
 import com.aireya.aireya.web.dto.MeasurementCreateDto;
@@ -12,9 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.time.Instant;
-
 
 /**
  * Endpoints de mediciones.
@@ -24,9 +21,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class MeasurementController {
 
-
     private final MeasurementService measurementService;
-
 
     @GetMapping
     @Operation(summary = "Obtener todas las mediciones (paginadas)")
@@ -34,14 +29,12 @@ public class MeasurementController {
         return measurementService.getAllMeasurements(pageable);
     }
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Crear una nueva medición")
     public MeasurementDto createMeasurement(@Valid @RequestBody MeasurementCreateDto dto) {
         return measurementService.createMeasurement(dto);
     }
-
 
     /**
      * Actualizar una medición existente.
@@ -52,15 +45,13 @@ public class MeasurementController {
         return measurementService.updateMeasurement(id, dto);
     }
 
-
     /**
      * Eliminar una medición por ID.
      */
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Eliminar una medición por ID")
     public void deleteMeasurement(@PathVariable Long id) {
         measurementService.deleteMeasurement(id);
     }
 }
-
-

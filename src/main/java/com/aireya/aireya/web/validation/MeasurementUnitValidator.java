@@ -18,6 +18,7 @@ public class MeasurementUnitValidator implements ConstraintValidator<ValidMeasur
         return switch (p) {
             case PM2_5, PM10 -> (u.contains("µg/m³") || u.contains("ug/m3"));
             case CO2, NO2, O3 -> (u.equals("ppm") || u.equals("ppb"));
+            default -> false; // cobertura completa para Jacoco
         };
     }
 }

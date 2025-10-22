@@ -14,18 +14,19 @@ public class JwtUtil {
     private final long expirationMs;
 
     public JwtUtil(@Value("${jwt.secret}") String secret,
-                   @Value("${jwt.expiration-ms}") long expirationMs) {
+                   @Value("${jwt.expiration-ms:3600000}") long jwtExpirationMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.expirationMs = expirationMs;
+        this.expirationMs = jwtExpirationMs;
     }
 
     public String generateToken(String username, String role) {
-        long now = System.currentTimeMillis();
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + expirationMs))
+                .setIssuedAt(now)
+                .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
